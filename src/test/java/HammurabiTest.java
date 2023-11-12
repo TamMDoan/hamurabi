@@ -40,6 +40,16 @@ public class HammurabiTest {
         assertEquals("In a plague, " + deaths + "% of your people die, not 50%.",
                      50, deaths);
     }
+
+    @Test
+    public final void testPercentDied(){
+        int years = 1;
+        int population = 100;
+        int starved = 25;
+        int percentDied = 0;
+
+        assertEquals(25, ham.percentDied(years, starved, population, percentDied));
+    }
     
     @Test
     public final void testStarvationDeaths() {

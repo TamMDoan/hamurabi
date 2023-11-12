@@ -1,3 +1,6 @@
+import java.io.IOException;
+import java.sql.SQLOutput;
+import java.util.InputMismatchException;
 import java.util.Random;         // imports go here
 import java.util.Scanner;
 
@@ -22,12 +25,16 @@ public class Hammurabi {         // must save in a file named Hammurabi.java
         int harvestPerAcre = 0;
         int bushelsAteByRats = 0;
         int plagueDeaths = 0;
+        int totalPeopleStarved = 0;
+        int totalImmigrants = 0;
+        int years = 1;
+        int percentDied = 0;
 
         // statements go after the declarations
-        for(int i = 1; i <= 10; i++){
+        while(years <= 10){
 
             // make a method for this
-            yearlySummary(i, acresOfLand, numberOfPeople, valueOfLand, numberOfBushels, peopleStarved, peopleMoved, harvest, harvestPerAcre, bushelsAteByRats, plagueDeaths);
+            yearlySummary(years, acresOfLand, numberOfPeople, valueOfLand, numberOfBushels, peopleStarved, peopleMoved, harvest, harvestPerAcre, bushelsAteByRats, plagueDeaths);
 
             //resetting special event values
             peopleMoved = 0;
@@ -65,11 +72,14 @@ public class Hammurabi {         // must save in a file named Hammurabi.java
             }
 
             numberOfPeople -= peopleStarved;
+            totalPeopleStarved += peopleStarved;
+            percentDied = percentDied(years, peopleStarved, numberOfPeople, percentDied);
 
             //there are only immigrants if people are not starving
             if(peopleStarved == 0){
                 peopleMoved = immigrants(numberOfPeople, acresOfLand, numberOfBushels);
                 numberOfPeople += peopleMoved;
+                totalImmigrants += peopleMoved;
             }
 
             harvest = harvest(acresToPlant);
@@ -82,11 +92,47 @@ public class Hammurabi {         // must save in a file named Hammurabi.java
 
             valueOfLand = newCostOfLand();
 
+            years++;
         }
 
-        System.out.println("Done");
+        endReport(years, totalPeopleStarved, numberOfPeople, acresOfLand, percentDied);
         // final summary here
 
+    }
+
+    int percentDied(int year, int starved, int population, int percentDied){
+        return ((year - 1) * percentDied + starved * 100 / population) / year;
+    }
+
+    void endReport(int years, int totalStarved, int population, int acres, int percentDied){
+        if(years < 10){
+            System.out.println("DUE TO VERY POOR MISMANAGEMENT, YOU HAVE BEEN VIOLENTLY AND SPEEDILY "+
+                    "\"REMOVED\" FROM OFFICE BY THE PEOPLE");
+        }
+        else{
+            String report = "O GREAT HAMMURABI, IN YOUR 10 YEARS OF OFFICE, " + percentDied +
+                    " PERCENT OF THE POPULATION STARVED. I.E. A TOTAL OF " + totalStarved + " PEOPLE DIED!\n" +
+                    "YOU STARTED WITH 10 ACRES PER PERSON AND ENDED WITH " + acres/population + " ACRES PER PERSON.\n\n";
+
+            if (totalStarved / population * 100 > 33 || acres / population < 7)
+                report += "DUE TO VERY POOR MISMANAGEMENT, YOU HAVE BEEN VIOLENTLY AND SPEEDILY "+
+                        "\"REMOVED\" FROM OFFICE BY THE PEOPLE";
+            else if (totalStarved / population * 100 > 10 || acres / population < 9)
+                report += "YOUR HEAVY-HANDED PERFORMANCE SMACKS OF NERO AND IVAN IV.\n" +
+                        "THE PEOPLE (REMAINING) FIND YOU AN UNPLEASANT RULER, AND,\n" +
+                        "FRANKLY, HATE YOUR GUTS!";
+            else if (totalStarved / population * 100 > 3 || acres / population < 10)
+                report += "YOUR PERFORMANCE COULD HAVE BEEN SOMEWHAT BETTER, BUT\n" +
+                        "REALLY WASN'T TOO BAD AT ALL.\n" +
+                        Math.random() * population * .8 + " PEOPLE WOULD" +
+                        "DEARLY LIKE TO SEE YOU ASSASSINATED BUT WE ALL HAVE OUR" +
+                        "TRIVIAL PROBLEMS";
+            else
+                report += "A FANTASTIC PERFORMANCE!!!  CHARLEMANGE, DISRAELI, AND\n" +
+                        "JEFFERSON COMBINED COULD NOT HAVE DONE BETTER!";
+
+            System.out.println(report);
+        }
     }
 
     void yearlySummary(int i, int acresOfLand, int numberOfPeople, int valueOfLand, int numberOfBushels, int peopleStarved, int peopleMoved, int numberOfHarvest, int bushelPerAcre, int numberOfDestroyedBushels, int plagueDeaths){
@@ -111,14 +157,21 @@ public class Hammurabi {         // must save in a file named Hammurabi.java
         int acresToBuy = 0;
 
         while(true) {
-            System.out.println("How many acres of land do you want to buy?: ");
-            acresToBuy = scanner.nextInt();
+            try {
+                System.out.println("How many acres of land do you want to buy?: ");
+                acresToBuy = scanner.nextInt();
 
-            if (acresToBuy * price <= bushels) {
-                // you will do the math in playGame()
-                break;
+                if (acresToBuy * price <= bushels) {
+                    // you will do the math in playGame()
+                    break;
+                }
+                System.out.println("You're too poor! Great Hammurabi, you only have " + bushels + " bushels.");
             }
-            System.out.println("You're too poor! Great Hammurabi, you only have " + bushels + " bushels.");
+            catch(Exception e){
+                System.out.println("This isn't a number!");
+                scanner.nextLine();
+            }
+
         }
 
         return acresToBuy;
@@ -129,14 +182,20 @@ public class Hammurabi {         // must save in a file named Hammurabi.java
         int acresToSell = 0;
 
         while(true){
-            System.out.println("How many acres of land do you want to sell?: ");
-            acresToSell = scanner.nextInt();
+            try {
+                System.out.println("How many acres of land do you want to sell?: ");
+                acresToSell = scanner.nextInt();
 
-            if(acresToSell <= acresOwned){
-                break;
+                if (acresToSell <= acresOwned) {
+                    break;
+                }
+
+                System.out.println("You don't even have that much land, great Hammurabi! Try again.");
             }
-
-            System.out.println("You don't even have that much land, great Hammurabi! Try again.");
+            catch(Exception e){
+                System.out.println("This isn't a number!");
+                scanner.nextLine();
+            }
         }
 
         return acresToSell;
@@ -146,14 +205,20 @@ public class Hammurabi {         // must save in a file named Hammurabi.java
         int grainToFeed = 0;
 
         while(true){
-            System.out.println("How much would you like to feed the people?: ");
-            grainToFeed = scanner.nextInt();
+            try {
+                System.out.println("How much would you like to feed the people?: ");
+                grainToFeed = scanner.nextInt();
 
-            if(grainToFeed <= bushels){
-                break;
+                if (grainToFeed <= bushels) {
+                    break;
+                }
+
+                System.out.println("You don't have that much. O great Hammurabi, you only have " + bushels + " bushels.");
             }
-
-            System.out.println("You don't have that much. O great Hammurabi, you only have " + bushels + " bushels.");
+            catch(InputMismatchException e){
+                System.out.println("This isn't a number!");
+                scanner.nextLine();
+            }
         }
 
         return grainToFeed;
@@ -163,20 +228,23 @@ public class Hammurabi {         // must save in a file named Hammurabi.java
         int acresToPlant = 0;
 
         while(true){
-            System.out.println("How many acres would you like to plant?");
-            acresToPlant = scanner.nextInt();
+            try {
+                System.out.println("How many acres would you like to plant?");
+                acresToPlant = scanner.nextInt();
 
-            if(acresToPlant <= acresOwned && acresToPlant <= population && acresToPlant <= bushels){
-                break;
+                if (acresToPlant <= acresOwned && acresToPlant <= population && acresToPlant <= bushels) {
+                    break;
+                } else if (acresToPlant >= acresOwned) {
+                    System.out.println("Too many acres!");
+                } else if (acresToPlant > population) {
+                    System.out.println("Not enough people! Great Hammurabi, your population is only " + population + " people.");
+                } else if (acresToPlant > bushels) {
+                    System.out.println("Too many acres, not enough bushels! O great Hammurabi, you only have " + bushels + " bushels!");
+                }
             }
-            else if(acresToPlant >= acresOwned){
-                System.out.println("Too many acres!");
-            }
-            else if(acresToPlant > population){
-                System.out.println("Not enough people! Great Hammurabi, your population is only " + population + " people.");
-            }
-            else if(acresToPlant > bushels){
-                System.out.println("Too many acres, not enough bushels! O great Hammurabi, you only have " + bushels + " bushels!");
+            catch (InputMismatchException e){
+                System.out.println("This isn't a number!");
+                scanner.nextLine();
             }
         }
 
