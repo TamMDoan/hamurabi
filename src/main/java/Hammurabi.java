@@ -87,7 +87,8 @@ public class Hammurabi {         // must save in a file named Hammurabi.java
             numberOfBushels += harvest;
 
             //grainEatenByRats is returning a percent
-            bushelsAteByRats = (grainEatenByRats(numberOfBushels)/100 * numberOfBushels);
+
+            bushelsAteByRats = (int) (((double)grainEatenByRats(numberOfBushels)/100) * numberOfBushels);
             numberOfBushels -= bushelsAteByRats;
 
             valueOfLand = newCostOfLand();
