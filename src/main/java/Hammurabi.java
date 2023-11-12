@@ -209,7 +209,7 @@ public class Hammurabi {         // must save in a file named Hammurabi.java
     }
 
     public int harvest(int acres) {
-        return acres * rand.nextInt(6) + 1;
+        return acres * (rand.nextInt(6) + 1);
     }
 
     public int grainEatenByRats(int numberOfBushels) {
