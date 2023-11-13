@@ -57,7 +57,7 @@ public class Hammurabi {         // must save in a file named Hammurabi.java
 
             //planting acres
             int acresToPlant = askHowManyAcresToPlant(acresOfLand, numberOfPeople, numberOfBushels);
-            numberOfBushels -= acresToPlant;
+            numberOfBushels -= (acresToPlant*2);
 
 
             //special events
@@ -233,13 +233,13 @@ public class Hammurabi {         // must save in a file named Hammurabi.java
                 System.out.println("How many acres would you like to plant?");
                 acresToPlant = scanner.nextInt();
 
-                if (acresToPlant <= acresOwned && acresToPlant <= population && acresToPlant <= bushels) {
+                if (acresToPlant <= acresOwned && acresToPlant/10 <= population && acresToPlant*2 <= bushels) {
                     break;
-                } else if (acresToPlant >= acresOwned) {
+                } else if (acresToPlant > acresOwned) {
                     System.out.println("Too many acres!");
-                } else if (acresToPlant > population) {
+                } else if (acresToPlant/10 > population) {
                     System.out.println("Not enough people! Great Hammurabi, your population is only " + population + " people.");
-                } else if (acresToPlant > bushels) {
+                } else if (acresToPlant*2 > bushels) {
                     System.out.println("Too many acres, not enough bushels! O great Hammurabi, you only have " + bushels + " bushels!");
                 }
             }
